@@ -15,27 +15,52 @@ function appendUnitToLargeNumber(num) {
 }
 
 
+function openResidentsModal(event) {
+    console.log(this);
+    $('#modal-large').modal('show');
+}
+
+
+function appendResidentsButton(object) {
+    if (object.residents.length > 0) {
+        let buttonHTML = Mustache.render(
+            `<button class="btn btn-primary" id="button-{{index}}-residents">
+                {{residents.length}} resident(s)
+            </button>`,
+            object);
+        $('#table-' + object.index + '-residents')
+            .append(buttonHTML)
+            .click(openResidentsModal);
+    }
+}
+
+
 function loadDataToTable(response) {
     let data = response.results;
 
     $('#loading-placeholder').remove();
     $.each(data, function(index, object) {
+        object['index'] = index;
         object.population = appendUnitToLargeNumber(object.population);
         if (object.surface_water !== 'unknown') {
             object.surface_water += '%';
         }
-        let tableRow =
+        let tableRow = Mustache.render(
             `<tr>
-                <td>{{ name }}</td>
-                <td>{{ diameter }}</td>
-                <td>{{ climate }}</td>
-                <td>{{ terrain }}</td>
-                <td>{{ surface_water }}</td>
-                <td>{{ population }}</td>
-            </tr>`;
-        tableRow = Mustache.render(tableRow, object);
+                <td id="table-{{index}}-name">{{ name }}</td>
+                <td id="table-{{index}}-diameter">{{ diameter }}</td>
+                <td id="table-{{index}}-climate">{{ climate }}</td>
+                <td id="table-{{index}}-terrain">{{ terrain }}</td>
+                <td id="table-{{index}}-surface-water">{{ surface_water }}</td>
+                <td id="table-{{index}}-population">{{ population }}</td>
+                <td id="table-{{index}}-residents"></td>
+            </tr>`,
+            object);
         $('#index-table').append(tableRow);
+
+        appendResidentsButton(object);
     });
+    console.log(data);
 }
 
 
