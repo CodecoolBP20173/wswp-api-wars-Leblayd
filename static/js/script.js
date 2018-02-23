@@ -110,11 +110,37 @@ function getDataFromLink(link, callback) {
 }
 
 
-function onLoadIndex() {
-    getPlanetsData();
+
+// Login / registration handling
+
+function openRegistrationModal() {
+    let modal = $('#modal-centered');
+    let container = $('#centered-modal-content');
+    container.empty();
+    let html =
+        `<div class="text-center">
+            <label for="username-input">Username:</label><br>
+            <input id="username-input" type="text"><br>
+            <label for="password-input">Password:</label><br>
+            <input id="password-input" type="text">
+        </div>
+        `;
+    $('#centered-modal-confirm').text('Register');
+
+    container.append(html);
+
+
+    modal.modal('show');
 }
 
 
 
 
-$(document).ready(onLoadIndex);
+
+$(document).ready(
+    function () {
+        getPlanetsData();
+        $('#button-logout').click();
+        $('#button-login').click();
+        $('#button-register').click(openRegistrationModal);
+    });

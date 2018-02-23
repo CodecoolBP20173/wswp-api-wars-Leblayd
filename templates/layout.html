@@ -21,22 +21,23 @@
     <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
 </head>
 <body>
-<nav class="navbar sticky-top navbar-dark bg-dark">
-    <div class="navbar-brand">Api wars</div>
-    <div>
-        {% if not login %}
-            <div class="navbar-brand">Logged in as: delete me in layout.html {{ session['username'] }}</div>
-            <button type="button" class="btn btn-primary" id="button-logout">Logout</button>
-        {% else %}
-            <button type="button" class="btn btn-primary" id="button-register">Register</button>
-            <button type="button" class="btn btn-primary" id="button-login">Login</button>
-        {% endif %}
-    </div>
-</nav>
+    <nav class="navbar sticky-top navbar-dark bg-dark">
+        <div class="navbar-brand">Api wars</div>
+        <div>
+            {% if login %}
+                <div class="navbar-brand">Logged in as: delete me in layout.html {{ session['username'] }}</div>
+                <button type="button" class="btn btn-primary" id="button-logout">Logout</button>
+            {% else %}
+                <button type="button" class="btn btn-primary" id="button-register">Register</button>
+                <button type="button" class="btn btn-primary" id="button-login">Login</button>
+            {% endif %}
+        </div>
+    </nav>
 
     {% block content %}
     {% endblock %}
 
 {% include 'modal-large.html' %}
+{% include 'modal-centered.html' %}
 </body>
 </html>

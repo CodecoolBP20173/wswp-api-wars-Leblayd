@@ -13,6 +13,9 @@
             <th>Surface water</th>
             <th>Population</th>
             <th>Residents</th>
+            {% if not login %}
+                <th>Vote</th>
+            {% endif %}
         </thead>
     </table>
     <h1 id="loading-placeholder">Loading planets data...</h1>
