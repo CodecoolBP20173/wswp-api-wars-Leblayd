@@ -1,7 +1,3 @@
-// Mustache example:
-// Mustache.render("{{a}}", {a: "x"});
-// returns "x"
-
 function appendUnitToLargeNumber(num) {
     let units = ['', ' Thousand', ' Million', ' Billion', ' Trillion', 'Quadrillion', 'Quintillion'];
     let unitIndex = 0;
@@ -15,22 +11,64 @@ function appendUnitToLargeNumber(num) {
 }
 
 
-function openResidentsModal(event) {
-    console.log(this);
-    $('#modal-large').modal('show');
+function appendDataToModal(response) {
+    let data = response;
+    let container = $('#large-modal-content');
+    console.log(container);
+    if (container[0].innerHTML === "") {
+        container.append(
+            `<div class="row">
+                <div class="col-4 card-header">Name</div>
+                <div class="col-1 card-header">Height</div>
+                <div class="col-1 card-header">Weight</div>
+                <div class="col-1 card-header">Skin</div>
+                <div class="col-1 card-header">Hair</div>
+                <div class="col-1 card-header">Eye</div>
+                <div class="col-1 card-header">Born</div>
+                <div class="col-2 card-header">Gender</div>
+            </div>`
+        );
+    }
+
+    // Note: The html is not a variable, so only handles residents' data
+    let content = Mustache.render(
+        `<div class="row">
+            <div class="col-4">{{name}}</div>
+            <div class="col-1">{{height}}</div>
+            <div class="col-1">{{mass}}</div>
+            <div class="col-1">{{skin_color}}</div>
+            <div class="col-1">{{hair_color}}</div>
+            <div class="col-1">{{eye_color}}</div>
+            <div class="col-1">{{birth_year}}</div>
+            <div class="col-2">{{gender}}</div>
+        </div>`,
+        data
+    );
+    container.append(content);
 }
 
 
 function appendResidentsButton(object) {
     if (object.residents.length > 0) {
         let buttonHTML = Mustache.render(
-            `<button class="btn btn-primary" id="button-{{index}}-residents">
+            `<button class="btn btn-primary" id="button-{{index}}-residents" data-toggle="modal">
                 {{residents.length}} resident(s)
             </button>`,
             object);
-        $('#table-' + object.index + '-residents')
-            .append(buttonHTML)
-            .click(openResidentsModal);
+        let buttonCell = $('#table-' + object.index + '-residents');
+        buttonCell.append(buttonHTML);
+
+        $('#button-' + object.index + '-residents').click(function() {
+            $('#large-modal-content').empty();
+            // Get and load each resident's data.
+            $.each(
+                object.residents,
+                function(index, value) {
+                    getDataFromLink(value, appendDataToModal);
+                });
+
+            $('#modal-large').modal('show');
+        });
     }
 }
 
@@ -60,12 +98,15 @@ function loadDataToTable(response) {
 
         appendResidentsButton(object);
     });
-    console.log(data);
 }
 
 
-function getPlanetsData () {
+function getPlanetsData() {
     $.getJSON('https://swapi.co/api/planets', loadDataToTable);
+}
+
+function getDataFromLink(link, callback) {
+    $.getJSON(link, callback);
 }
 
 
