@@ -113,34 +113,52 @@ function getDataFromLink(link, callback) {
 
 // Login / registration handling
 
-function openRegistrationModal() {
-    let modal = $('#modal-centered');
+function openCenteredModal(confirmName, titleName) {
     let container = $('#centered-modal-content');
     container.empty();
-    let html =
+    container.append(
         `<div class="text-center">
             <label for="username-input">Username:</label><br>
             <input id="username-input" type="text"><br>
             <label for="password-input">Password:</label><br>
             <input id="password-input" type="text">
         </div>
-        `;
-    $('#centered-modal-confirm').text('Register');
+        `);
+    $('#centered-modal-confirm').text(confirmName);
+    $('#centered-modal-title').text(titleName);
 
-    container.append(html);
-
-
-    modal.modal('show');
+    $('#modal-centered').modal('show');
 }
 
+function openConfirmModal(titleName, message) {
+    message = message || 0;
+    let container = $('#centered-modal-content');
+    container.empty();
 
+    let html = message ?
+        Mustache.render(`<div class="text-center">{{message}}</div>`,
+            {"message": message}) :
+        `<div class="text-center">Are you sure?</div>`;
 
+    container.append(html);
+    $('#centered-modal-confirm').text('Yes');
+    $('#centered-modal-title').text(titleName);
+
+    $('#modal-centered').modal('show');
+}
 
 
 $(document).ready(
     function () {
         getPlanetsData();
-        $('#button-logout').click();
-        $('#button-login').click();
-        $('#button-register').click(openRegistrationModal);
+
+        $('#button-logout').click(function() {
+            openConfirmModal('Logout', 'Are you sure you want to log out?');
+        });
+        $('#button-login').click(function() {
+            openCenteredModal('Log in', 'Login');
+        });
+        $('#button-register').click(function() {
+            openCenteredModal('Register', 'Registration');
+        });
     });
