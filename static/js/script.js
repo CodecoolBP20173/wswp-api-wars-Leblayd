@@ -177,7 +177,12 @@ $(document).ready(
             });
         });
         $('#button-login').click(function() {
-            openCenteredModal('Log in', 'Login', function () {});
+            openCenteredModal('Log in', 'Login', function () {
+                let link = Mustache.render(
+                    '/login?username={{un}}&password={{pw}}',
+                    {'un': $('#username-input').val(), 'pw': $('#password-input').val()});
+                location.replace(link);
+            });
         });
         $('#button-register').click(function() {
             openCenteredModal('Register', 'Registration', function () {
