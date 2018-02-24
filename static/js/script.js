@@ -147,7 +147,7 @@ function openCenteredModal(confirmName, titleName, callback) {
     $('#modal-centered').modal('show');
 }
 
-function openConfirmModal(titleName, message) {
+function openConfirmModal(titleName, message, callback) {
     message = message || 0;
     let container = $('#centered-modal-content');
     container.empty();
@@ -158,7 +158,9 @@ function openConfirmModal(titleName, message) {
         `<div class="text-center">Are you sure?</div>`;
 
     container.append(html);
-    $('#centered-modal-confirm').text('Yes');
+    $('#centered-modal-confirm')
+        .text('Yes')
+        .on('click', callback);
     $('#centered-modal-title').text(titleName);
 
     $('#modal-centered').modal('show');
@@ -170,7 +172,9 @@ $(document).ready(
         $.getJSON('https://swapi.co/api/planets', loadDataToTable);
 
         $('#button-logout').click(function() {
-            openConfirmModal('Logout', 'Are you sure you want to log out?');
+            openConfirmModal('Logout', 'Are you sure you want to log out?', function () {
+                location.replace('/logout');
+            });
         });
         $('#button-login').click(function() {
             openCenteredModal('Log in', 'Login', function () {});
@@ -180,10 +184,7 @@ $(document).ready(
                 let link = Mustache.render(
                     '/register?username={{un}}&password={{pw}}',
                     {'un': $('#username-input').val(), 'pw': $('#password-input').val()});
-                $.getJSON(link, function () {
-                    sessionStorage.setItem("username", $('#username-input').val())
-                });
-                location.reload();
+                location.replace(link);
             });
         });
     });
