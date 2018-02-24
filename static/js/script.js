@@ -128,7 +128,7 @@ function loadDataToTable(response) {
 
 // Login / registration handling
 
-function openCenteredModal(confirmName, titleName) {
+function openCenteredModal(confirmName, titleName, callback) {
     let container = $('#centered-modal-content');
     container.empty();
     container.append(
@@ -139,7 +139,9 @@ function openCenteredModal(confirmName, titleName) {
             <input id="password-input" type="password">
         </div>
         `);
-    $('#centered-modal-confirm').text(confirmName);
+    $('#centered-modal-confirm')
+        .text(confirmName)
+        .on('click', callback);
     $('#centered-modal-title').text(titleName);
 
     $('#modal-centered').modal('show');
@@ -171,9 +173,17 @@ $(document).ready(
             openConfirmModal('Logout', 'Are you sure you want to log out?');
         });
         $('#button-login').click(function() {
-            openCenteredModal('Log in', 'Login');
+            openCenteredModal('Log in', 'Login', function () {});
         });
         $('#button-register').click(function() {
-            openCenteredModal('Register', 'Registration');
+            openCenteredModal('Register', 'Registration', function () {
+                let link = Mustache.render(
+                    '/register?username={{un}}&password={{pw}}',
+                    {'un': $('#username-input').val(), 'pw': $('#password-input').val()});
+                $.getJSON(link, function () {
+                    sessionStorage.setItem("username", $('#username-input').val())
+                });
+                location.reload();
+            });
         });
     });
