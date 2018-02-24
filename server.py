@@ -8,15 +8,24 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    print(session)
-    login = session.get('username')
-    return render_template('index.html', login=login)
+    logged_in = session.get('username')
+    return render_template('index.html', login=logged_in)
+
+
+@app.route('/login')
+def login():
+    username = request.args['username']
+    password_in_db = data_manager.get_user_password(username)['password']
+    if werkzeug.security.check_password_hash(password_in_db, request.args['password']):
+        session['username'] = username
+    return redirect(url_for('index'))
 
 
 @app.route('/register')
 def register():
     username = request.args['username']
     password = werkzeug.security.generate_password_hash(request.args['password'], method='pbkdf2:sha256', salt_length=8)
+
     data_manager.register_user(username, password)
     session['username'] = username
     return redirect(url_for('index'))

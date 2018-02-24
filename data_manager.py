@@ -2,14 +2,14 @@ import database_common
 
 
 @database_common.connection_handler
-def get_login_data(cursor, username):
+def get_user_password(cursor, username):
     cursor.execute("""
-                    SELECT * FROM users
+                    SELECT password FROM users
                     WHERE username = %(username)s; 
                     """,
                    {"username": username}
                    )
-    user = cursor.fetchall()
+    user = cursor.fetchone()
     return user
 
 
