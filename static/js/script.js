@@ -14,7 +14,6 @@ function appendUnitToLargeNumber(num) {
 function appendDataToModal(response) {
     let data = response;
     let container = $('#large-modal-content');
-    console.log(container);
     if (container[0].innerHTML === "") {
         container.append(
             `<div class="row">
@@ -64,7 +63,7 @@ function appendResidentsButton(object) {
             $.each(
                 object.residents,
                 function(index, value) {
-                    getDataFromLink(value, appendDataToModal);
+                    $.getJSON(value, appendDataToModal);
                 });
 
             $('#modal-large').modal('show');
@@ -72,10 +71,34 @@ function appendResidentsButton(object) {
     }
 }
 
+function appendPagination(prev, next) {
+    let prevItem = $('#prev-page-item');
+    let nextItem = $('#next-page-item');
+    prevItem.off('click');
+    nextItem.off('click');
+    if (!prev) {
+        prevItem.addClass('disabled');
+    } else {
+        prevItem.removeClass('disabled');
+        prevItem.on('click', function () {
+            $.getJSON(prev, loadDataToTable);
+        });
+    }
+    if (!next) {
+        nextItem.addClass('disabled');
+    } else {
+        nextItem.removeClass('disabled');
+        nextItem.on('click', function () {
+            $.getJSON(next, loadDataToTable);
+        });
+    }
+}
+
 
 function loadDataToTable(response) {
     let data = response.results;
-
+    let tableBody = $('#index-table-body');
+    tableBody.empty();
     $('#loading-placeholder').remove();
     $.each(data, function(index, object) {
         object['index'] = index;
@@ -94,21 +117,13 @@ function loadDataToTable(response) {
                 <td id="table-{{index}}-residents"></td>
             </tr>`,
             object);
-        $('#index-table').append(tableRow);
+        tableBody.append(tableRow);
 
         appendResidentsButton(object);
     });
+
+    appendPagination(response.previous, response.next);
 }
-
-
-function getPlanetsData() {
-    $.getJSON('https://swapi.co/api/planets', loadDataToTable);
-}
-
-function getDataFromLink(link, callback) {
-    $.getJSON(link, callback);
-}
-
 
 
 // Login / registration handling
@@ -121,7 +136,7 @@ function openCenteredModal(confirmName, titleName) {
             <label for="username-input">Username:</label><br>
             <input id="username-input" type="text"><br>
             <label for="password-input">Password:</label><br>
-            <input id="password-input" type="text">
+            <input id="password-input" type="password">
         </div>
         `);
     $('#centered-modal-confirm').text(confirmName);
@@ -150,7 +165,7 @@ function openConfirmModal(titleName, message) {
 
 $(document).ready(
     function () {
-        getPlanetsData();
+        $.getJSON('https://swapi.co/api/planets', loadDataToTable);
 
         $('#button-logout').click(function() {
             openConfirmModal('Logout', 'Are you sure you want to log out?');

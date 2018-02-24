@@ -3,7 +3,6 @@
 {% block title %} Index {% endblock %}
 
 {% block content %}
-
     <table id="index-table" class="table table-striped table-hover">
         <thead class="thead-dark">
             <th>Planet</th>
@@ -13,10 +12,23 @@
             <th>Surface water</th>
             <th>Population</th>
             <th>Residents</th>
-            {% if not login %}
+            {% if login %}
                 <th>Vote</th>
             {% endif %}
         </thead>
+        <tbody id="index-table-body">
+
+        </tbody>
     </table>
-    <h1 id="loading-placeholder">Loading planets data...</h1>
+    <h1 id="loading-placeholder">Loading planets...</h1>
+    <nav id='pagination-menu' aria-label="pagination" class="float-center">
+        <ul class="pagination">
+            <li class="page-item" id="prev-page-item">
+                <a class="page-link" href="#!" id="prev-page-button" tabindex="-1">Previous</a>
+            </li>
+            <li class="page-item" id="next-page-item">
+                <a class="page-link" href="#!" id="next-page-button">Next</a>
+            </li>
+        </ul>
+    </nav>
 {% endblock %}
