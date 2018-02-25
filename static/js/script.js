@@ -157,7 +157,7 @@ function openCenteredModal(confirmName, titleName, callback) {
 }
 
 function openConfirmModal(titleName, message, callback) {
-    message = message || 0;
+    message = message || 0; // This is supposedly how optional parameters are done in JS.
     let container = $('#centered-modal-content');
     container.empty();
 
@@ -176,6 +176,39 @@ function openConfirmModal(titleName, message, callback) {
 }
 
 
+function logoutButtonListener() {
+    openConfirmModal('Logout', 'Are you sure you want to log out?', function () {
+        ajaxPostHelper('/logout', "Logout unsuccessful");
+    });
+}
+function loginButtonListener() {
+    openCenteredModal('Log in', 'Login', function () {
+        let link = Mustache.render(
+            '/login?username={{un}}&password={{pw}}',
+            {'un': $('#username-input').val(), 'pw': $('#password-input').val()});
+        ajaxPostHelper(link, "Username or password incorrect");
+    });
+}
+function registerButtonListener() {
+    openCenteredModal('Register', 'Registration', function () {
+        let link = Mustache.render(
+            '/register?username={{un}}&password={{pw}}',
+            {'un': $('#username-input').val(), 'pw': $('#password-input').val()});
+        ajaxPostHelper(link, "Username is already in use");
+    });
+}
+
+function ajaxPostHelper(link, errorMessage) {
+    $.ajax({
+        type: "POST",
+        url: link,
+        success: backToIndex,
+        error: function () {
+            alert(errorMessage)
+        }
+    });
+}
+
 function backToIndex() {
     location.replace('/');
 }
@@ -184,46 +217,8 @@ $(document).ready(
     function () {
         $.getJSON('https://swapi.co/api/planets', loadDataToTable);
 
-        $('#button-logout').click(function() {
-            openConfirmModal('Logout', 'Are you sure you want to log out?', function () {
-                $.ajax({
-                    type: "POST",
-                    url: '/logout',
-                    success: backToIndex,
-                    error: function () {
-                        alert("Logout unsuccessful");
-                    },
-                });
-            });
-        });
-        $('#button-login').click(function() {
-            openCenteredModal('Log in', 'Login', function () {
-                let link = Mustache.render(
-                    '/login?username={{un}}&password={{pw}}',
-                    {'un': $('#username-input').val(), 'pw': $('#password-input').val()});
-                $.ajax({
-                    type: "POST",
-                    url: link,
-                    success: backToIndex,
-                    error: function () {
-                        alert("Username or password incorrect");
-                    },
-                });
-            });
-        });
-        $('#button-register').click(function() {
-            openCenteredModal('Register', 'Registration', function () {
-                let link = Mustache.render(
-                    '/register?username={{un}}&password={{pw}}',
-                    {'un': $('#username-input').val(), 'pw': $('#password-input').val()});
-                $.ajax({
-                    type: "POST",
-                    url: link,
-                    success: backToIndex,
-                    error: function () {
-                        alert("Username is already in use");
-                    },
-                });
-            });
-        });
-    });
+        $('#button-logout').click(logoutButtonListener);
+        $('#button-login').click(loginButtonListener);
+        $('#button-register').click(registerButtonListener);
+    }
+);
