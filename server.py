@@ -12,13 +12,13 @@ def index():
     return render_template('index.html', login=logged_in)
 
 
-@app.route('/login')
+@app.route('/login', methods=['POST'])
 def login():
     username = request.args['username']
     password_in_db = data_manager.get_user_password(username)['password']
     if werkzeug.security.check_password_hash(password_in_db, request.args['password']):
         session['username'] = username
-    return redirect(url_for('index'))
+        return ''
 
 
 @app.route('/register', methods=['POST'])
@@ -34,11 +34,10 @@ def register():
         pass
 
 
-
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return ''
 
 
 if __name__ == '__main__':

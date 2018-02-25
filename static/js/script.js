@@ -186,7 +186,14 @@ $(document).ready(
 
         $('#button-logout').click(function() {
             openConfirmModal('Logout', 'Are you sure you want to log out?', function () {
-                location.replace('/logout');
+                $.ajax({
+                    type: "POST",
+                    url: '/logout',
+                    success: backToIndex,
+                    error: function () {
+                        alert("Logout unsuccessful");
+                    },
+                });
             });
         });
         $('#button-login').click(function() {
@@ -194,7 +201,14 @@ $(document).ready(
                 let link = Mustache.render(
                     '/login?username={{un}}&password={{pw}}',
                     {'un': $('#username-input').val(), 'pw': $('#password-input').val()});
-                location.replace(link);
+                $.ajax({
+                    type: "POST",
+                    url: link,
+                    success: backToIndex,
+                    error: function () {
+                        alert("Username or password incorrect");
+                    },
+                });
             });
         });
         $('#button-register').click(function() {
