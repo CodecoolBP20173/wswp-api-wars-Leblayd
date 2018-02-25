@@ -1,7 +1,7 @@
 from flask import Flask, render_template, session, jsonify, request, url_for, redirect
 import data_manager
 import werkzeug
-
+from psycopg2 import IntegrityError
 
 app = Flask(__name__)
 
@@ -21,14 +21,18 @@ def login():
     return redirect(url_for('index'))
 
 
-@app.route('/register')
+@app.route('/register', methods=['POST'])
 def register():
     username = request.args['username']
     password = werkzeug.security.generate_password_hash(request.args['password'], method='pbkdf2:sha256', salt_length=8)
+    try:
+        data_manager.register_user(username, password)
+        session['username'] = username
+        return ''
+    except IntegrityError:
+        # Definitely needs some error handling.
+        pass
 
-    data_manager.register_user(username, password)
-    session['username'] = username
-    return redirect(url_for('index'))
 
 
 @app.route('/logout')

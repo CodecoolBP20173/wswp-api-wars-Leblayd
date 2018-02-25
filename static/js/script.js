@@ -1,5 +1,11 @@
-function appendUnitToLargeNumber(num) {
-    let units = ['', ' Thousand', ' Million', ' Billion', ' Trillion', 'Quadrillion', 'Quintillion'];
+function appendUnitToLargeNumber(num, unitType) {
+    let units = [];
+    switch(unitType) {
+        case 'length':
+            units.push(' km', ' Mm', ' Gm', ' Tm');
+        case 'general':
+            units.push('', ' Thousand', ' Million', ' Billion', ' Trillion', 'Quadrillion', 'Quintillion');
+    }
     let unitIndex = 0;
 
     // Divide the number by 1000 as long as it stays above 1
@@ -102,7 +108,10 @@ function loadDataToTable(response) {
     $('#loading-placeholder').remove();
     $.each(data, function(index, object) {
         object['index'] = index;
-        object.population = appendUnitToLargeNumber(object.population);
+        object.diameter = appendUnitToLargeNumber(object.diameter, 'length');
+        if (object.population !== 'unknown') {
+            object.population = appendUnitToLargeNumber(object.population, 'general') + ' people';
+        }
         if (object.surface_water !== 'unknown') {
             object.surface_water += '%';
         }
@@ -167,6 +176,10 @@ function openConfirmModal(titleName, message, callback) {
 }
 
 
+function backToIndex() {
+    location.replace('/');
+}
+
 $(document).ready(
     function () {
         $.getJSON('https://swapi.co/api/planets', loadDataToTable);
@@ -189,7 +202,14 @@ $(document).ready(
                 let link = Mustache.render(
                     '/register?username={{un}}&password={{pw}}',
                     {'un': $('#username-input').val(), 'pw': $('#password-input').val()});
-                location.replace(link);
+                $.ajax({
+                    type: "POST",
+                    url: link,
+                    success: backToIndex,
+                    error: function () {
+                        alert("Username is already in use");
+                    },
+                });
             });
         });
     });

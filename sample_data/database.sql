@@ -41,6 +41,5 @@ ALTER TABLE ONLY planet_votes
     ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 
-INSERT INTO users VALUES (0, 'admin', '$2b$12$pw.JRl7uMFfLmrv3UghfZewC/06Pei3Vmyxy6O6XOhazt2hNZF/bu');
-SELECT pg_catalog.setval('users_id_seq', 1, true);
-
+INSERT INTO users VALUES (0, 'admin', 'pbkdf2:sha256:50000$LZ3hlfQh$01794aea0012f2b639e58f12f38653a007c372296103cab57864b2e3aac33cdf');
+SELECT pg_catalog.setval('users_id_seq', 0, true);
