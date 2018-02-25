@@ -199,12 +199,22 @@ function registerButtonListener() {
 }
 
 function ajaxPostHelper(link, errorMessage) {
+    let warningElement = $('#modal-error-message');
     $.ajax({
         type: "POST",
         url: link,
         success: backToIndex,
         error: function () {
-            alert(errorMessage)
+            alert(errorMessage);
+            if (warningElement.length === 0) {
+                // I'm appending to the body, since that gets cleared on every opening of any modal, anyways.
+                $('.modal-body').append(
+                    '<div class="alert alert-danger" role="alert" id="modal-error-message"></div>'
+                );
+                warningElement.text(errorMessage);
+            } else {
+                warningElement.text('As I said, ' + errorMessage);
+            }
         }
     });
 }
