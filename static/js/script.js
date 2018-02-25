@@ -17,25 +17,7 @@ function appendUnitToLargeNumber(num, unitType) {
 }
 
 
-function appendDataToModal(response) {
-    let data = response;
-    let container = $('#large-modal-content');
-    if (container[0].innerHTML === "") {
-        container.append(
-            `<div class="row">
-                <div class="col-4 card-header">Name</div>
-                <div class="col-1 card-header">Height</div>
-                <div class="col-1 card-header">Weight</div>
-                <div class="col-1 card-header">Skin</div>
-                <div class="col-1 card-header">Hair</div>
-                <div class="col-1 card-header">Eye</div>
-                <div class="col-1 card-header">Born</div>
-                <div class="col-2 card-header">Gender</div>
-            </div>`
-        );
-    }
-
-    // Note: The html is not a variable, so only handles residents' data
+function appendResidentData(resident, currentIndex, lastIndex) {
     let content = Mustache.render(
         `<div class="row">
             <div class="col-4">{{name}}</div>
@@ -47,11 +29,38 @@ function appendDataToModal(response) {
             <div class="col-1">{{birth_year}}</div>
             <div class="col-2">{{gender}}</div>
         </div>`,
-        data
+        resident
     );
-    container.append(content);
+    $('#large-modal-content').append(content);
+    if (currentIndex === lastIndex) {
+        $('#modal-large').modal('show');
+    }
 }
 
+
+function openResidentsModal(object) {
+    let container = $('#large-modal-content');
+    container.empty();
+    container.append(
+        `<div class="row">
+            <div class="col-4 card-header">Name</div>
+            <div class="col-1 card-header">Height</div>
+            <div class="col-1 card-header">Weight</div>
+            <div class="col-1 card-header">Skin</div>
+            <div class="col-1 card-header">Hair</div>
+            <div class="col-1 card-header">Eye</div>
+            <div class="col-1 card-header">Born</div>
+            <div class="col-2 card-header">Gender</div>
+        </div>`);
+    // Get and load each resident's data.
+    $.each(
+        object.residents,
+        function(index, link) {
+            $.getJSON(link, function(resident) {
+                appendResidentData(resident, index, object.residents.length - 1);
+            });
+        });
+}
 
 function appendResidentsButton(object) {
     if (object.residents.length > 0) {
@@ -63,16 +72,8 @@ function appendResidentsButton(object) {
         let buttonCell = $('#table-' + object.index + '-residents');
         buttonCell.append(buttonHTML);
 
-        $('#button-' + object.index + '-residents').click(function() {
-            $('#large-modal-content').empty();
-            // Get and load each resident's data.
-            $.each(
-                object.residents,
-                function(index, value) {
-                    $.getJSON(value, appendDataToModal);
-                });
-
-            $('#modal-large').modal('show');
+        $('#button-' + object.index + '-residents').click(function () {
+            openResidentsModal(object);
         });
     }
 }
@@ -157,7 +158,8 @@ function openCenteredModal(confirmName, titleName, callback) {
 }
 
 function openConfirmModal(titleName, message, callback) {
-    message = message || 0; // This is supposedly how optional parameters are done in JS.
+    // This is supposedly how optional parameters are done in JS.
+    message = message || 0;
     let container = $('#centered-modal-content');
     container.empty();
 
@@ -225,7 +227,7 @@ function backToIndex() {
 
 $(document).ready(
     function () {
-        $.getJSON('https://swapi.co/api/planets', loadDataToTable);
+        $.getJSON('https://swapi.co/api/planets/', loadDataToTable);
 
         $('#button-logout').click(logoutButtonListener);
         $('#button-login').click(loginButtonListener);
