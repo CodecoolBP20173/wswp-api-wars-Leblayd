@@ -151,6 +151,7 @@ function openCenteredModal(confirmName, titleName, callback) {
         `);
     $('#centered-modal-confirm')
         .text(confirmName)
+        .off('click')
         .on('click', callback);
     $('#centered-modal-title').text(titleName);
 
@@ -171,6 +172,7 @@ function openConfirmModal(titleName, message, callback) {
     container.append(html);
     $('#centered-modal-confirm')
         .text('Yes')
+        .off('click')
         .on('click', callback);
     $('#centered-modal-title').text(titleName);
 
@@ -183,6 +185,8 @@ function logoutButtonListener() {
         ajaxPostHelper('/logout', "Logout unsuccessful");
     });
 }
+
+
 function loginButtonListener() {
     openCenteredModal('Log in', 'Login', function () {
         let link = Mustache.render(
@@ -191,6 +195,8 @@ function loginButtonListener() {
         ajaxPostHelper(link, "Username or password incorrect");
     });
 }
+
+
 function registerButtonListener() {
     openCenteredModal('Register', 'Registration', function () {
         let link = Mustache.render(
@@ -200,6 +206,7 @@ function registerButtonListener() {
     });
 }
 
+
 function ajaxPostHelper(link, errorMessage) {
     let warningElement = $('#modal-error-message');
     $.ajax({
@@ -207,13 +214,12 @@ function ajaxPostHelper(link, errorMessage) {
         url: link,
         success: backToIndex,
         error: function () {
-            alert(errorMessage);
+            console.log(warningElement);
             if (warningElement.length === 0) {
                 // I'm appending to the body, since that gets cleared on every opening of any modal, anyways.
                 $('.modal-body').append(
-                    '<div class="alert alert-danger" role="alert" id="modal-error-message"></div>'
+                    '<div class="alert alert-danger" role="alert" id="modal-error-message">' + errorMessage + '</div>'
                 );
-                warningElement.text(errorMessage);
             } else {
                 warningElement.text('As I said, ' + errorMessage);
             }
